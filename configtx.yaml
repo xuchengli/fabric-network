@@ -25,7 +25,7 @@ Organizations:
         ID: OrdererMSP
 
         # MSPDir is the filesystem path which contains the MSP configuration
-        MSPDir: ca/org0/orderer/msp
+        MSPDir: org0/ca/orderer/msp
 
     - &Org1
         # DefaultOrg defines the organization which is used in the sampleconfig
@@ -35,7 +35,7 @@ Organizations:
         # ID to load the MSP definition as
         ID: Org1MSP
 
-        MSPDir: ca/org1/peer0/msp
+        MSPDir: org1/ca/peer0/msp
 
         AnchorPeers:
             # AnchorPeers defines the location of peers which can be used
