@@ -9,22 +9,58 @@ networks:
   basic:
 
 services:
-  ca.example.com:
+  rca-org0:
+    container_name: rca-org0
     image: hyperledger/fabric-ca
     environment:
-      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
-      - FABRIC_CA_SERVER_CA_NAME=ca.example.com
+      - FABRIC_CA_SERVER_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=rca-org0
     ports:
-      - "7054:7054"
-    command: sh -c 'fabric-ca-server start -b admin:adminpw'
+      - "7053:7053"
+    command: sh -c 'fabric-ca-server start -b rca-org0-admin:rca-org0-adminpw --port 7053'
     volumes:
       - ./org0/ca:/etc/hyperledger/fabric-ca-server
-    container_name: ca.example.com
     networks:
       - basic
 
-  orderer.example.com:
-    container_name: orderer.example.com
+  rca-org1:
+    container_name: rca-org1
+    image: hyperledger/fabric-ca
+    environment:
+      - FABRIC_CA_SERVER_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=rca-org1
+    ports:
+      - "7054:7054"
+    command: sh -c 'fabric-ca-server start -b rca-org1-admin:rca-org1-adminpw'
+    volumes:
+      - ./org1/ca:/etc/hyperledger/fabric-ca-server
+    networks:
+      - basic
+
+  peer1-org1:
+    container_name: peer1-org1
+    image: hyperledger/fabric-peer
+    environment:
+      - CORE_PEER_ID=peer1-org1
+      - CORE_PEER_ADDRESS=peer1-org1:7051
+      - CORE_PEER_LOCALMSPID=Org1MSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/org1/peer1/msp
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric-network_basic
+      - FABRIC_LOGGING_SPEC=debug
+      - CORE_CHAINCODE_LOGGING_LEVEL=info
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/org1/peer1
+    volumes:
+      - /var/run:/host/var/run
+      - ./org1/peer1:/etc/hyperledger/org1/peer1
+      - ./config/:/etc/hyperledger/configtx
+    ports:
+      - 7051:7051
+    networks:
+      - basic
+
+  orderer1-org0:
+    container_name: orderer1-org0
     image: hyperledger/fabric-orderer
     environment:
       - FABRIC_LOGGING_SPEC=info
@@ -32,40 +68,13 @@ services:
       - ORDERER_GENERAL_GENESISMETHOD=file
       - ORDERER_GENERAL_GENESISFILE=/etc/hyperledger/configtx/genesis.block
       - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
-      - ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/msp/orderer/msp
+      - ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/org0/orderer/msp
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderer
     command: orderer
     ports:
       - 7050:7050
     volumes:
         - ./config/:/etc/hyperledger/configtx
-        - ./org0/ca/orderer:/etc/hyperledger/msp/orderer
-    networks:
-      - basic
-
-  peer0.org1.example.com:
-    container_name: peer0.org1.example.com
-    image: hyperledger/fabric-peer
-    environment:
-      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-      - CORE_PEER_ID=peer0.org1.example.com
-      - FABRIC_LOGGING_SPEC=info
-      - CORE_CHAINCODE_LOGGING_LEVEL=info
-      - CORE_PEER_LOCALMSPID=Org1MSP
-      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer/msp
-      - CORE_PEER_ADDRESS=peer0.org1.example.com:7051
-      # # the following setting starts chaincode containers on the same
-      # # bridge network as the peers
-      # # https://docs.docker.com/compose/networking/
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric-network_basic
-    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
-    command: peer node start
-    # command: peer node start --peer-chaincodedev=true
-    ports:
-      - 7051:7051
-      - 7053:7053
-    volumes:
-        - /var/run/:/host/var/run/
-        - ./org1/ca/peer0:/etc/hyperledger/msp/peer
+        - ./org0/orderer:/etc/hyperledger/org0/orderer
     networks:
       - basic
