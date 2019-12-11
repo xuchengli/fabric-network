@@ -53,7 +53,6 @@ services:
     volumes:
       - /var/run:/host/var/run
       - ./org1/peer1:/etc/hyperledger/org1/peer1
-      - ./config/:/etc/hyperledger/configtx
     ports:
       - 7051:7051
     networks:
@@ -78,3 +77,26 @@ services:
         - ./org0/orderer:/etc/hyperledger/org0/orderer
     networks:
       - basic
+
+  cli-org1:
+     container_name: cli-org1
+     image: hyperledger/fabric-tools
+     tty: true
+     stdin_open: true
+     environment:
+       - GOPATH=/opt/gopath
+       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+       - FABRIC_LOGGING_SPEC=DEBUG
+       - CORE_PEER_ID=cli-org1
+       - CORE_PEER_ADDRESS=peer1-org1:7051
+       - CORE_PEER_LOCALMSPID=Org1MSP
+       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/org1/peer1/msp
+     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/org1
+     command: sh
+     volumes:
+       - ./org1/peer1:/etc/hyperledger/org1/peer1
+       - ./org1/peer1/assets/chaincode:/opt/gopath/src/github.com/hyperledger/fabric-samples/chaincode
+       - ./org1/admin:/etc/hyperledger/org1/admin
+       - ./config/:/etc/hyperledger/configtx
+     networks:
+       - basic
