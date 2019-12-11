@@ -1,6 +1,7 @@
 #!/bin/bash
 
 docker-compose -f docker-compose.yml down
+docker rm -f $(docker ps -aq -f "name=dev-peer1-org1-mycc-1.0")
 rm -rf org0 org1 config
 
 # 启动组织0的ca
@@ -65,12 +66,29 @@ docker-compose -f docker-compose.yml up -d orderer1-org0 cli-org1
 docker ps -a
 
 # 创建，加入通道
+echo "_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/"
+echo "_/_/_/_/_/_/_/_/                      _/_/_/_/_/_/_/_/_/_/_/"
+echo "_/_/_/_/_/_/_/_/     创建，加入通道    _/_/_/_/_/_/_/_/_/_/_/"
+echo "_/_/_/_/_/_/_/_/                      _/_/_/_/_/_/_/_/_/_/_/"
+echo "_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/"
 sleep 10
 docker exec -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/org1/admin/msp" cli-org1 bash -c "peer channel create -c mychannel -f /etc/hyperledger/configtx/channel.tx -o orderer1-org0:7050 && peer channel join -b mychannel.block"
 
 # 安装，部署链码
+echo "_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/"
+echo "_/_/_/_/_/_/_/_/                      _/_/_/_/_/_/_/_/_/_/_/"
+echo "_/_/_/_/_/_/_/_/     安装，部署链码    _/_/_/_/_/_/_/_/_/_/_/"
+echo "_/_/_/_/_/_/_/_/                      _/_/_/_/_/_/_/_/_/_/_/"
+echo "_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/"
 cp ${PWD}/chaincode/abac.go ${PWD}/org1/peer1/assets/chaincode
-docker exec -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/org1/admin/msp" cli-org1 bash -c "peer chaincode install -n mycc -v 1.0 -p /opt/gopath/src/github.com/hyperledger/fabric-samples/chaincode && peer chaincode instantiate -C mychannel -n mycc -v 1.0 -c '{\"Args\":[\"init\",\"a\",\"100\",\"b\",\"200\"]}' -o orderer1-org0:7050"
+docker exec -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/org1/admin/msp" cli-org1 bash -c "peer chaincode install -n mycc -v 1.0 -p github.com/hyperledger/fabric-samples/chaincode && peer chaincode instantiate -C mychannel -n mycc -v 1.0 -c '{\"Args\":[\"init\",\"a\",\"100\",\"b\",\"200\"]}' -o orderer1-org0:7050"
+docker ps -a
 
+sleep 5
 # 调用，查询链码
+echo "_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/"
+echo "_/_/_/_/_/_/_/_/                      _/_/_/_/_/_/_/_/_/_/_/"
+echo "_/_/_/_/_/_/_/_/     调用，查询链码    _/_/_/_/_/_/_/_/_/_/_/"
+echo "_/_/_/_/_/_/_/_/                      _/_/_/_/_/_/_/_/_/_/_/"
+echo "_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/"
 docker exec -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/org1/admin/msp" cli-org1 bash -c "peer chaincode query -C mychannel -n mycc -c '{\"Args\":[\"query\",\"a\"]}' && peer chaincode invoke -C mychannel -n mycc -c '{\"Args\":[\"invoke\",\"a\",\"b\",\"10\"]}' && peer chaincode query -C mychannel -n mycc -c '{\"Args\":[\"query\",\"a\"]}'"
