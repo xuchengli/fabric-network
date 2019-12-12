@@ -55,13 +55,27 @@ cp ${PWD}/org0/admin/msp/signcerts/cert.pem ${PWD}/org0/orderer/msp/admincerts/o
 
 # 生成配置文件
 # 创建组织0的msp目录
-mkdir ${PWD}/org0/msp && mkdir ${PWD}/org0/msp/admincerts ${PWD}/org0/msp/cacerts
-cp ${PWD}/org0/admin/msp/signcerts/cert.pem ${PWD}/org0/msp/admincerts/admin-org0-cert.pem
+mkdir ${PWD}/org0/msp && mkdir ${PWD}/org0/msp/cacerts
 cp ${PWD}/org0/ca/ca-cert.pem ${PWD}/org0/msp/cacerts/org0-ca-cert.pem
+echo 'NodeOUs:
+  Enable: true
+  AdminOUIdentifier:
+    Certificate: "cacerts/org0-ca-cert.pem"
+    OrganizationalUnitIdentifier: "admin"
+  OrdererOUIdentifier:
+    Certificate: "cacerts/org0-ca-cert.pem"
+    OrganizationalUnitIdentifier: "orderer"' > ${PWD}/org0/msp/config.yaml
 # 创建组织1的msp目录
-mkdir ${PWD}/org1/msp && mkdir ${PWD}/org1/msp/admincerts ${PWD}/org1/msp/cacerts
-cp ${PWD}/org1/admin/msp/signcerts/cert.pem ${PWD}/org1/msp/admincerts/admin-org1-cert.pem
+mkdir ${PWD}/org1/msp && mkdir ${PWD}/org1/msp/cacerts
 cp ${PWD}/org1/ca/ca-cert.pem ${PWD}/org1/msp/cacerts/org1-ca-cert.pem
+echo 'NodeOUs:
+  Enable: true
+  AdminOUIdentifier:
+    Certificate: "cacerts/org1-ca-cert.pem"
+    OrganizationalUnitIdentifier: "admin"
+  PeerOUIdentifier:
+    Certificate: "cacerts/org1-ca-cert.pem"
+    OrganizationalUnitIdentifier: "peer"' > ${PWD}/org1/msp/config.yaml
 
 mkdir config
 ${PWD}/bin/configtxgen -profile OneOrgOrdererGenesis -channelID byfn-sys-channel -outputBlock ./config/genesis.block
