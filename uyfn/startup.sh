@@ -45,5 +45,26 @@ function generateChannelArtifacts() {
   fi
 }
 
+function networkUp() {
+  docker-compose -f docker-compose-cli.yaml up -d 2>&1
+  docker ps -a
+  if [ $? -ne 0 ]; then
+    echo "ERROR !!!! Unable to start network"
+    exit 1
+  fi
+
+  sleep 1
+  echo "Sleeping 15s to allow etcdraft cluster to complete booting"
+  sleep 14
+
+  # now run the end to end script
+  docker exec cli scripts/script.sh
+  if [ $? -ne 0 ]; then
+    echo "ERROR !!!! Test failed"
+    exit 1
+  fi
+}
+
 generateCerts
 generateChannelArtifacts
+networkUp
