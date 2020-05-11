@@ -28,7 +28,7 @@ function networkDown() {
   #Cleanup images
   removeUnwantedImages
   # remove orderer block and other channel configuration transactions and certs
-  rm -rf channel-artifacts/*.* crypto-config ./extra-orderer-artifacts/crypto-config/
+  rm -rf channel-artifacts crypto-config ./extra-orderer-artifacts/crypto-config/
 }
 
 networkDown
