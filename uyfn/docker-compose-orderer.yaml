@@ -6,15 +6,15 @@
 version: '2'
 
 volumes:
-  orderer2.example.com:
+  orderer2.example2.com:
 
 networks:
   uyfn:
 
 services:
 
-  orderer2.example.com:
-    container_name: orderer2.example.com
+  orderer2.example2.com:
+    container_name: orderer2.example2.com
     image: hyperledger/fabric-orderer:latest
     environment:
       - FABRIC_LOGGING_SPEC=INFO
@@ -36,10 +36,10 @@ services:
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
     command: orderer
     volumes:
-        - ./channel-artifacts/orderer2-genesis.block:/var/hyperledger/orderer/orderer.genesis.block
-        - ./crypto-config/ordererOrganizations/example.com/orderers/orderer2.example.com/msp:/var/hyperledger/orderer/msp
-        - ./crypto-config/ordererOrganizations/example.com/orderers/orderer2.example.com/tls/:/var/hyperledger/orderer/tls
-        - orderer2.example.com:/var/hyperledger/production/orderer
+        - ./channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+        - ./crypto-config/ordererOrganizations/example2.com/orderers/orderer2.example2.com/msp:/var/hyperledger/orderer/msp
+        - ./crypto-config/ordererOrganizations/example2.com/orderers/orderer2.example2.com/tls/:/var/hyperledger/orderer/tls
+        - orderer2.example2.com:/var/hyperledger/production/orderer
     ports:
       - 8050:7050
     networks:

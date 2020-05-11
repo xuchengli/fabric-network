@@ -41,6 +41,33 @@ Organizations:
                 Type: Signature
                 Rule: "OR('Orderer1MSP.admin')"
 
+    # SampleOrg defines an MSP using the sampleconfig.  It should never be used
+    # in production but may be used as a template for other definitions
+    # - &OrdererOrg2
+    #     # DefaultOrg defines the organization which is used in the sampleconfig
+    #     # of the fabric.git development environment
+    #     Name: OrdererOrg2
+    #
+    #     # ID to load the MSP definition as
+    #     ID: Orderer2MSP
+    #
+    #     # MSPDir is the filesystem path which contains the MSP configuration
+    #     MSPDir: crypto-config/ordererOrganizations/example2.com/msp
+    #
+    #     # Policies defines the set of policies at this level of the config tree
+    #     # For organization policies, their canonical path is usually
+    #     #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
+    #     Policies:
+    #         Readers:
+    #             Type: Signature
+    #             Rule: "OR('Orderer2MSP.member')"
+    #         Writers:
+    #             Type: Signature
+    #             Rule: "OR('Orderer2MSP.member')"
+    #         Admins:
+    #             Type: Signature
+    #             Rule: "OR('Orderer2MSP.admin')"
+
     - &Org1
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
@@ -301,11 +328,17 @@ Profiles:
                   Port: 7050
                   ClientTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer1.example.com/tls/server.crt
                   ServerTLSCert: crypto-config/ordererOrganizations/example.com/orderers/orderer1.example.com/tls/server.crt
+                # - Host: orderer2.example2.com
+                #   Port: 7050
+                #   ClientTLSCert: crypto-config/ordererOrganizations/example2.com/orderers/orderer2.example2.com/tls/server.crt
+                #   ServerTLSCert: crypto-config/ordererOrganizations/example2.com/orderers/orderer2.example2.com/tls/server.crt
             Addresses:
                 - orderer1.example.com:7050
+                # - orderer2.example2.com:7050
 
             Organizations:
-            - *OrdererOrg1
+                - *OrdererOrg1
+                # - *OrdererOrg2
             Capabilities:
                 <<: *OrdererCapabilities
         Application:
